@@ -18,9 +18,9 @@ spoilerTable <- function(df) {
   cat("\n\n</details>\n")
 }
 
-formations <- xlsx::read.xlsx("data/Formations ES.xlsx", sheetIndex = 1)
-candidats <- xlsx::read.xlsx("data/Candidats ES2024.xlsx", sheetIndex = 1)
-codes.lycées <- unique(candidats$NA.)
+formations <- readxl::read_xlsx("data/Formations ES.xlsx", sheet = 1)
+candidats <- readxl::read_xlsx("data/Candidats ES2024.xlsx", sheet = 1)
+codes.lycées <- unique(candidats$...4)
 code.region <- "Nouvelle-Aquitaine"
 lycees <- read.csv2("data/fr-en-indicateurs-de-resultat-des-lycees-denseignement-general-et-technologique.csv", dec='.')
 ips <- read.csv2("data/fr-en-ips_lycees.csv", dec='.')
@@ -47,7 +47,7 @@ et son représentatif de tous les niveaux de performance, allant de 60% à 90% d
 de mention.
 
 
-```{r carte.lycees, fig.cap="Positionnement des lycées de Nouvelle-Aquitaine en fonction de leur taille et taux de mention"}
+```{r carte.lycees, fig.cap="Positionnement des lycées de Nouvelle-Aquitaine en fonction de leur taille et taux de mention", fig.asp=1/1}
 lycees %>% 
   filter(annee == max(annee), libelle_region_2016 == str_to_upper(code.region)) %>%
   ggplot(aes(x=effectif_presents_total_series,y=taux_mention_brut_toutes_series, 
@@ -61,7 +61,9 @@ lycees %>%
   theme_cpesr() +
   theme(
     legend.position = "none",
-    panel.grid.major.x = element_line(colour = "#D8D8D8"))
+    panel.grid.major.x = element_line(colour = "#D8D8D8")) +
+  labs(title = "Positionnement des lycées de Nouvelle-Aquitaine",
+  subtitle = "en fonction de leur taille et taux de mention")
 ```
 
 ```{r carte.lycees.data, results='asis'}
@@ -73,7 +75,7 @@ lycees %>%
 ```
 
 
-```{r carte.lycees.ips, fig.cap="Positionnement des lycées de Nouvelle-Aquitaine en fonction de leur taille et taux de mention", fig.asp=9/16}
+```{r carte.lycees.ips, fig.cap="Positionnement des lycées de Nouvelle-Aquitaine en fonction de leur IPS et taux de mention", fig.asp=1/1}
 lycees %>% 
   filter(annee == max(annee), libelle_region_2016 == str_to_upper(code.region)) %>%
   left_join(ips %>% filter(rentree_scolaire == max(rentree_scolaire)), by = c("code_etablissement" = "uai")) %>%
@@ -88,7 +90,9 @@ lycees %>%
   theme_cpesr() +
   theme(
     legend.position = "none",
-    panel.grid.major.x = element_line(colour = "#D8D8D8"))
+    panel.grid.major.x = element_line(colour = "#D8D8D8")) +
+  labs(title = "Positionnement des lycées de Nouvelle-Aquitaine",
+  subtitle = "en fonction de leur taille, IPS et taux de mention")
 ```
 
 
@@ -251,7 +255,7 @@ parcoursup %>%
 ```
 
 
-```{r carte.formations.candidatures}
+```{r carte.formations.candidatures, fig.asp=1/1}
 parcoursup %>% 
   filter(Région.de.l.établissement == code.region) %>%
   ggplot(aes(x=Effectif.total.des.candidats.pour.une.formation,
@@ -267,5 +271,7 @@ parcoursup %>%
   scale_y_continuous(labels = ~ paste0(.x,"%"), name = "Taux d'accès (100% = non sélectif)") +
   theme_cpesr() +
   theme(legend.position = "none", 
-        panel.grid.major.x = element_line(colour = "#D8D8D8"))
+        panel.grid.major.x = element_line(colour = "#D8D8D8")) +
+  labs(title="Indicateurs Parcoursup des formations post-bac",
+       subtitle="Taux d'accès et nombre de candidatures")
 ```
